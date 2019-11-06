@@ -1,4 +1,9 @@
 from flask import Flask, send_from_directory
+from pagepy.adminPage import adminRoute
+from pagepy.indexPage import indexRoute
+from pagepy.customerPage import customerRoute
+from pagepy.loginPage import loginRoute
+from pysqlite.SqliteApp import sqldbRoute
 import os;
 
 app = Flask(__name__)
@@ -30,9 +35,4 @@ def favicon():
 
 
 if __name__ == '__main__':
-    from pagepy.adminPage import adminRoute
-    from pagepy.indexPage import indexRoute
-    from pagepy.customerPage import customerRoute
-    from pagepy.loginPage import loginRoute
-    from pysqlite.SqliteApp import sqldbRoute
     app.run(debug=True, port=5000)
