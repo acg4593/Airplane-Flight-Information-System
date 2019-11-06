@@ -30,9 +30,9 @@ def favicon():
 
 
 if __name__ == '__main__':
-    from indexPage import indexRoute
-    from SqliteApp import sqldbRoute
-    from loginPage import loginRoute
-    from adminPage import adminRoute
-    from customerPage import customerRoute
+    from pagepy.adminPage import adminRoute
+    from pagepy.indexPage import indexRoute
+    from pagepy.customerPage import customerRoute
+    from pagepy.loginPage import loginRoute
+    from pysqlite.SqliteApp import sqldbRoute
     app.run(debug=True, port=5000)

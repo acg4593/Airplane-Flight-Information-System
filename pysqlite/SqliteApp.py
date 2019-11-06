@@ -1,7 +1,7 @@
 import sqlite3
 from flask import request
-import sqlite_db_rebuild
-from SqlResponse import SqlResponse, sql_response_from_cursor
+from pysqlite.sqlite_db_rebuild import rebuild
+from pysqlite.SqlResponse import SqlResponse, sql_response_from_cursor
 from extras import table_to_html
 
 if __name__ == "__main__":
@@ -9,7 +9,7 @@ if __name__ == "__main__":
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     if rebuild_db:
-        sqlite_db_rebuild.rebuild(c, conn)
+        rebuild(c, conn)
 
 def get_all_flights():
     with sqlite3.connect('database.db') as con:

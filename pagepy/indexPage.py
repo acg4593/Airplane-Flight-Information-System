@@ -2,7 +2,7 @@ from flask import render_template
 from constants import keys
 from extras import randomString
 import os, time, datetime
-from SqliteApp import get_available_flights, get_all_flights
+from pysqlite.SqliteApp import get_available_flights, get_all_flights
 from extras import table_to_html
 
 def indexRoute():

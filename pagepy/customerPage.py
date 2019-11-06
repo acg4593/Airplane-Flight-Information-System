@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for
-from SqliteApp import get_available_flights
+from pysqlite.SqliteApp import get_available_flights
 from extras import table_to_html
 
 def customerRoute():
