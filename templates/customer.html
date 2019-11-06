@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{title}}</title>
+        <script type="text/javascript" src="/static/javascript/customer.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/customer.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/overview.css"/>
+    </head>
+    <body>
+        <div class="header">
+            <img class="ff-logo" src="/static/images/ff-logo.png" width="128px" height="64px" alt="Foreman Flights">
+            <div class="nav">
+                <a class="navButton" href='/reporting'>Flight Information</a>
+                <a class="navButton" href='/'>Home</a>
+            </div>
+        </div>
+        {% if (not search and not selected) or (search and selected) %}
+        <div id="main" class="content">
+            <div class="flightHeader">Current Flights</div>
+            <div class="flightData">
+                {{flightData|safe}}
+            </div>
+        </div>
+        {% endif %}
+        {% if search and not selected %}
+        <div id="search" class="content">
+            Search
+        </div>
+        {% endif %}
+        {% if selected and not search %}
+        <div id="selected" class="content">
+            Selected
+        </div>
+        {% endif %}
+        {% if False%}
+        <div id="cancel" class="content">
+            <form>
+                <div>
+                    <div>Name</div>
+                    <input type="text">
+                </div>
+                <div>
+                    <div>phone</div>
+                    <input type="phone">
+                </div>
+                <div>
+                    <input type="submit">
+                </div>
+            </form>
+
+            <div>
+
+            ...Query
+
+            </div>
+        </div>
+        {% endif %}
+    </body>
+</html>

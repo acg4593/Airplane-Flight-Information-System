@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Main Page</title>
+        <script type="text/javascript" src="/static/javascript/index.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
+    </head>
+    <body>
+        <div class="header">
+            <img class="ff-logo" src="/static/images/ff-logo.png" width="128px" height="64px" alt="Foreman Flights">
+            <div class="nav">
+                <a class="navButton" href="/customer">Plan Travel</a>
+                <a class="navButton" href="/reporting">Flight Information</a>
+                <a class="navButton" href="/login">Administrative</a>
+            </div>
+        </div>
+        <div class="main">
+            {% if flightData %}
+            <div class="flightHeader">Current Flights</div>
+            <div class="flightData">
+                {{flightData|safe}}
+            </div>
+            {% else %}
+            <div class="flightHeader">There are no flights available!</div>
+            {% endif %}
+        </div>
+    </body>
+</html>
