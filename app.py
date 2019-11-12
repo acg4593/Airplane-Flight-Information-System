@@ -21,7 +21,7 @@ def loadSqltest():
 def loadLogin():
     return loginRoute()
 
-@app.route("/admin")
+@app.route("/admin", methods = ['POST', 'GET'])
 def loadAdmin():
     return adminRoute()
 

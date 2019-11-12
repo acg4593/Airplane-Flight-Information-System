@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for
-from pysqlite.SqliteApp import get_available_flights
+from pysqlite.SqliteApp import get_available_flights, get_all_flights
 from extras import table_to_html
 
 def customerRoute():
@@ -9,7 +9,7 @@ def customerRoute():
     isSearch = search != None
     isSelected = flight_number != None or leg_number != None
 
-    response = get_available_flights()
+    response = get_all_flights()
     flight_number = response.get_column('flight_number');
     leg_number = response.get_column('leg_number');
     custom_links_href = [];

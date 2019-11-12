@@ -6,7 +6,7 @@ from pysqlite.SqliteApp import get_available_flights, get_all_flights
 from extras import table_to_html
 
 def indexRoute():
-    response = get_all_flights();
+    response = get_available_flights();
     flight_number = response.remove_column('flight_number');
     leg_number = response.remove_column('leg_number');
     custom_links_href = [];

@@ -8,7 +8,7 @@ def table_to_html(table = [], table_type = 'table', table_class = 'table', table
     if table_header is not None:
         html += '<{0} class="{1}">'.format(table_row_type, table_row_class)
         for header in table_header:
-            html += '<{0} class="{1}">{2}</{0}>'.format(table_header_type, table_header_class, header);
+            html += '<{0} class="{1}">{2}</{0}>'.format(table_header_type, table_header_class, header.replace('_', ' '));
         html += '</{0}>'.format(table_row_type)
     for j in range(len(table)):
         if custom_links_href is not None:

@@ -11,6 +11,12 @@ if __name__ == "__main__":
     if rebuild_db:
         rebuild(c, conn)
 
+def query(query, paramaters={}):
+    with sqlite3.connect('database.db') as con:
+        c = con.cursor()
+        c.execute(query, paramaters)
+        return sql_response_from_cursor(c)
+
 def get_all_flights():
     with sqlite3.connect('database.db') as con:
         c = con.cursor()
