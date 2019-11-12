@@ -2,7 +2,10 @@
 <html>
     <head>
         <title>Administrative</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/javascript/admin.js"></script>
         <link rel="stylesheet" type="text/css" href="/static/styles/console.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
     </head>
     <body>
         <h1 class='header'>ADMIN CONSOLE</h1>
@@ -13,7 +16,7 @@
                 </div>
                 <div class='row'>
                     <div class='title'>Flight Id:</div>
-                    <select name='flight_id' required>
+                    <select id='flight_id' name='flight_id' required>
                     {% for i in range(leg_instance_len_flight_id) %}
                         <option value="{{leg_instance_flight_id[i]}}">{{leg_instance_flight_leg_data[i]}}</option>
                     {% endfor %}
@@ -33,23 +36,26 @@
                 </div>
                 <div class='row'>
                     <div class='title'>Departure Time:</div>
-                    <input name='departure_time' type='time' required/>
+                    <input name='departure_time' type='datetime-local' required/>
                 </div>
                 <div class='row'>
                     <div class='title'>Arrival Time:</div>
-                    <input name='arrival_time' type='time' required/>
+                    <input name='arrival_time' type='datetime-local' required/>
                 </div>
                 <div class='row'>
                     <input name='create_leg_instance' type='submit'/>
                 </div>
             </form>
+            <div id='leg_instance_update' class='adminBox'>
+
+            </div>
             <form id='flight_leg' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Flight Leg</div>
                 </div>
                 <div class='row'>
                     <div class='title'>Flight:</div>
-                    <select name='flight_number' required>
+                    <select id='flight_number' name='flight_number' required>
                         {% for i in range(flight_leg_len_flight) %}
                         <option value="{{flight_leg_flight_number[i]}}">{{flight_leg_flight_data[i]}}</option>
                         {% endfor %}
@@ -69,7 +75,7 @@
                     </select>
                 </div>
                 <div class='row'>
-                    <div class='title'>Leg Number:</div>
+                    <div class='title'>Arrival Airport:</div>
                     <select name='arrival_airport_code' required>
                         {% for i in range(flight_leg_len_airport) %}
                         <option value="{{flight_leg_airport_code[i]}}">{{flight_leg_airport_data[i]}}</option>
@@ -80,6 +86,9 @@
                     <input name='create_flight_leg' type='submit'/>
                 </div>
             </form>
+            <div id='flight_leg_update' class='adminBox'>
+
+            </div>
         </div>
     </body>
 </html>

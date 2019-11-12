@@ -1,5 +1,5 @@
 from flask import Flask, send_from_directory
-from pagepy.adminPage import adminRoute
+from pagepy.adminPage import adminRoute, leg_instance_update_route, flight_leg_update_route
 from pagepy.indexPage import indexRoute
 from pagepy.customerPage import customerRoute
 from pagepy.loginPage import loginRoute
@@ -24,6 +24,14 @@ def loadLogin():
 @app.route("/admin", methods = ['POST', 'GET'])
 def loadAdmin():
     return adminRoute()
+
+@app.route("/admin/leg_instance_update_get")
+def leg_instance_update_get():
+    return leg_instance_update_route();
+
+@app.route("/admin/flight_leg_update_get")
+def flight_leg_update_get():
+    return flight_leg_update_route();
 
 @app.route("/customer")
 def loadCustomer():
