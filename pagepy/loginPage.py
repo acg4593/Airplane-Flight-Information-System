@@ -8,6 +8,6 @@ def loginRoute():
         keys.append(key)
         if len(keys) > 10:
             keys.pop(0)
-        return redirect(url_for('loadAdmin', key=key))
+        return redirect(url_for('load_get_admin', key=key))
     else:
         return render_template('/adminLogin.html')

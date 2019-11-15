@@ -1,69 +1,219 @@
-from flask import render_template, request, redirect, url_for
+from flask import request, render_template, redirect, url_for
 from constants import keys
 from datetime import datetime, time, date
 import pysqlite.SqliteApp as db
 from flask.json import jsonify
 from extras import table_to_html
+import json;
 
-def adminRoute():
-    if request.method == 'POST':
-        print(request.form);
-        if 'create_leg_instance' in request.form:
-            create_leg_instance(request.form);
-
-        elif 'create_flight_leg' in request.form:
-            create_flight_leg(request.form);
-
-    leg_instance_flight_leg = get_leg_instance_flight_leg()
-    leg_instance_airplane = get_leg_instance_airplane();
-    flight_leg_flight = get_flight_leg_flight();
-    flight_leg_airport = get_flight_leg_airport();
-    
-    key = request.args.get("key")
+def admin_get_route():
+    flight_leg = get_selection_flight_leg()
+    airplane = get_selection_airplane();
+    flight = get_selection_flight();
+    airport = get_selection_airport();
+    airplane_type = get_selection_airplane_type();
     if "key" in request.args:
+        key = request.args['key']
         if key in keys:
             return render_template('adminMenu.html',
-            leg_instance_len_flight_id= len(leg_instance_flight_leg['flight_id']), 
-            leg_instance_flight_id= leg_instance_flight_leg['flight_id'],
-            leg_instance_flight_leg_data=leg_instance_flight_leg['flight_leg_data'],
-            leg_instance_len_airplanes=len(leg_instance_airplane['airplane_id']),
-            leg_instance_airplane_id=leg_instance_airplane['airplane_id'],
-            leg_instance_airplane_data=leg_instance_airplane['airplane_data'],
-            flight_leg_len_flight=len(flight_leg_flight['flight_number']),
-            flight_leg_flight_number=flight_leg_flight['flight_number'],
-            flight_leg_flight_data=flight_leg_flight['flight_data'],
-            flight_leg_leg_number=0,
-            flight_leg_len_airport=len(flight_leg_airport['airport_code']),
-            flight_leg_airport_code=flight_leg_airport['airport_code'],
-            flight_leg_airport_data=flight_leg_airport['airport_data'],
+            flight_leg= flight_leg, 
+            airplane=airplane,
+            flight=flight,
+            airport=airport,
+            airplane_type=airplane_type
             );
     return redirect(url_for('loadLogin'))
 
+def admin_update_route():
+    if 'type' in request.args:
+        type = request.args['type'];
+        if 'leg_instance' == type:
+            return jsonify({'status': 'success', 'data': leg_instance_update_get(request.args['flight_id'])});
+        elif 'flight_leg' == type:
+            return jsonify({'status': 'success', 'data': flight_leg_update_get(request.args['flight_number'])});
+        elif 'flight' == type:
+            return jsonify({'status': 'success', 'data': flight_update_get()});
+        elif 'airport' == type:
+            return jsonify({'status': 'success', 'data': airport_update_get()});
+        elif 'fares' == type:
+            return jsonify({'status': 'success', 'data': fares_update_get(request.args['flight_number'])});
+        elif 'airplane_type' == type:
+            return jsonify({'status': 'success', 'data': airplane_type_update_get()});
+        elif 'can_land' == type:
+            return jsonify({'status': 'success', 'data': can_land_update_get()});
+        elif 'airplane' == type:
+            return jsonify({'status': 'success', 'data': airplane_update_get(request.args['type_name'])});
+        elif 'seat_reservation' == type:
+            return jsonify({'status': 'success', 'data': seat_reservation_update_get()});
+    return jsonify({'status': 'failure'});
 
+def admin_submit_route():
+    if 'type' in request.args:
+        type = request.args['type'];
+        if 'leg_instance' == type:
+            return create_leg_instance();
+        elif 'flight_leg' == type:
+            return create_flight_leg();
+        elif 'flight' == type:
+            return create_flight();
+        elif 'airport' == type:
+            return create_airport();
+        elif 'fares' == type:
+            return create_fares();
+        elif 'airplane_type' == type:
+            return create_airplane_type();
+        elif 'can_land' == type:
+            return create_can_land();
+        elif 'airplane' == type:
+            return create_airplane();
+    return jsonify({'status': 'failure'});
 
-def create_leg_instance(form):
+def admin_select_route():
+    if 'type' in request.args:
+        type = request.args['type'];
+        if 'flight_leg' == type:
+            return jsonify({'status': 'success', 'data': get_selection_flight_leg()});
+        elif 'airplane' == type:
+            return jsonify({'status': 'success', 'data': get_selection_airplane()});
+        elif 'flight' == type:
+            return jsonify({'status': 'success', 'data': get_selection_flight()});
+        elif 'airport' == type:
+            return jsonify({'status': 'success', 'data': get_selection_airport()});
+        elif 'airplane_type' == type:
+            return jsonify({'status': 'success', 'data': get_selection_airplane_type()});
+
+    return jsonify({'status': 'failure'});
+
+#START CREATE HELPERS
+def create_leg_instance():
     print('POST: Creating Leg Instance');
-    flight_id = form['flight_id'].split(':');
-    airplane_id = form['airplane_id'];
-    leg_date = form['leg_date'];
-    departure_time = form['departure_time'];
-    arrival_time = form['arrival_time']
+    flight_id = request.args['flight_id'].split(':');
+    airplane_id = request.args['airplane_id'];
+    leg_date = request.args['leg_date'];
+    departure_time = datetime.strptime(request.args['departure_time'], '%Y-%m-%dT%H:%M');
+    arrival_time = datetime.strptime(request.args['arrival_time'], '%Y-%m-%dT%H:%M');
 
     flight_legs = db.query("SELECT * FROM flight_leg where :fn = flight_number and :ln = leg_number", { "fn": flight_id[0], "ln": flight_id[1]});
     airplanes = db.query("SELECT * FROM airplane where :ai = airplane_id", {'ai': airplane_id});
     flight_leg = flight_legs.get_row(0);
     airplane = airplanes.get_row(0);
-    db.create_leg_instance(flight_leg['flight_number'], flight_leg['leg_number'], leg_date, airplane['total_number_of_seats'], airplane_id, flight_leg['departure_airport_code'], departure_time, flight_leg['arrival_airport_code'], arrival_time);
 
+    if(db.leg_instance_exists(flight_leg['flight_number'], flight_leg['leg_number'], leg_date)):
+        db.update_leg_instance(flight_leg['flight_number'], flight_leg['leg_number'], leg_date, airplane['total_number_of_seats'], airplane_id, departure_time, arrival_time)
+        return jsonify({'status': 'success', 'command': 'updated'})
+    else:
+        db.create_leg_instance(flight_leg['flight_number'], flight_leg['leg_number'], leg_date, airplane['total_number_of_seats'], airplane_id, flight_leg['departure_airport_code'], departure_time, flight_leg['arrival_airport_code'], arrival_time);
+        return jsonify({'status': 'success', 'command': 'created'})
 
-def create_flight_leg(form):
-    print('POST: Creating Flight Leg');
-    flight_number = form['flight_number'];
-    leg_number = form['leg_number'];
-    departure_airport_code = form['departure_airport_code'];
-    arrival_airport_code = form['arrival_airport_code'];
+def create_flight_leg():
+    flight_number = request.args['flight_number'];
+    leg_number = request.args['leg_number'];
+    departure_airport_code = request.args['departure_airport_code'];
+    arrival_airport_code = request.args['arrival_airport_code'];
     db.insert_flight_leg(flight_number,leg_number,departure_airport_code,None,arrival_airport_code,None);
+    return jsonify({'status': 'success'})
 
+def create_flight():
+    print('POST: Creating Flight');
+    number = request.args['number'];
+    airline = request.args['airline'];
+    weekdays = request.args['weekdays'];
+    db.insert_flight(number,airline,weekdays);
+    return jsonify({'status': 'success'})
+
+def create_airport():
+    print('POST: Creating Airport');
+    airport_code = request.args['airport_code'];
+    name = request.args['name'];
+    city = request.args['city'];
+    state = request.args['state'];
+    db.insert_airport(airport_code,name,city,state);
+    return jsonify({'status': 'success'})
+
+def create_fares():
+    print('POST: Creating Fares');
+    flight_number = request.args['flight_number'];
+    fare_code = request.args['fare_code'];
+    amount = request.args['amount'];
+    restrictions = request.args['restrictions'];
+    db.insert_fares(flight_number,fare_code,amount,restrictions);
+    return jsonify({'status': 'success'})
+
+def create_airplane_type():
+    print('POST: Creating Airplane Type');
+    type_name = request.args['type_name'];
+    max_seats = request.args['max_seats'];
+    company = request.args['company'];
+    db.insert_airplane_type(type_name,max_seats,company);
+    return jsonify({'status': 'success'})
+
+def create_can_land():
+    print('POST: Creating Can Land');
+    airplane_type_name = request.args['airplane_type_name'];
+    airport_code = request.args['airport_code'];
+    db.insert_can_land(airplane_type_name,airport_code);
+    return jsonify({'status': 'success'})
+
+def create_airplane():
+    print('POST: Creating Airplane');
+    airplane_id = request.args['airplane_id'];
+    type_name = request.args['type_name']
+    airplane_types = db.query('SELECT * FROM airplane_type where type_name = :tn', {'tn': type_name});
+    airplane_type = airplane_types.get_row(0);
+    db.insert_airplane(airplane_id,airplane_type['max_seats'],type_name);
+    return jsonify({'status': 'success'})
+#END CREATE HELPERS
+
+#START SELECTION HELPERS
+
+def get_selection_flight_leg():
+    flight_leg = get_leg_instance_flight_leg();
+    flight_id = flight_leg['flight_id'];
+    flight_data = flight_leg['flight_leg_data'];
+    html = ''
+    for i in range(len(flight_id)):
+        html += '<option value="{0}">{1}</option>'.format(flight_id[i], flight_data[i]);
+    return html;
+
+def get_selection_airplane():
+    airplane = get_leg_instance_airplane();
+    airplane_id = airplane['airplane_id'];
+    airplane_data = airplane['airplane_data'];
+    html = ''
+    for i in range(len(airplane_id)):
+        html += '<option value="{0}">{1}</option>'.format(airplane_id[i], airplane_data[i]);
+    return html;
+
+def get_selection_flight():
+    flight = get_flight_leg_flight();
+    flight_number = flight['flight_number']
+    flight_data = flight['flight_data']
+    html = ''
+    for i in range(len(flight_number)):
+        html += '<option value="{0}">{1}</option>'.format(flight_number[i], flight_data[i]);
+    return html;
+
+def get_selection_airport():
+    airport = get_flight_leg_airport();
+    airport_code = airport['airport_code'];
+    airport_data = airport['airport_data'];
+    html = ''
+    for i in range(len(airport_code)):
+        html += '<option value="{0}">{1}</option>'.format(airport_code[i], airport_data[i]);
+    return html;
+
+def get_selection_airplane_type():
+    airplane_type = get_airplane_type_name();
+    type_name = airplane_type['type_name']
+    type_data = airplane_type['type_data']
+    html = ''
+    for i in range(len(type_name)):
+        html += '<option value="{0}">{1}</option>'.format(type_name[i], type_data[i]);
+    return html;
+
+#END SELECTION HELPERS
+
+#START GET HELPERS
 def get_leg_instance_flight_leg():
     db_flight_legs = db.query("SELECT fl.flight_number flight_number, fl.leg_number leg_number, a1.name departure_name, a1.city departure_city, a1.state departure_state, a2.name arrival_name, a2.city arrival_city, a2.state arrival_state from flight_leg fl, airport a1, airport a2 where fl.departure_airport_code = a1.airport_code and fl.arrival_airport_code = a2.airport_code");
     flight_number = db_flight_legs.get_column('flight_number');
@@ -119,34 +269,125 @@ def get_flight_leg_airport():
         airport_data.append('{0} - {1} ({2}, {3})'.format(airport_code[i], name[i], city[i], state[i]));
     return {'airport_code': airport_code, 'airport_data': airport_data }
 
-def get_html_table(table, headers):
-    return table_to_html(
-        table=table, table_type="div", table_class="flightTable",
-        table_header=headers, table_header_type="div", table_header_class="th",
-        table_row_type='div', table_row_class='tr', table_data_type="div", table_data_class="td",
-        custom_links_class="tr flightLink");
+def get_airplane_type_name():
+    query = db.query('SELECT type_name, max_seats, company FROM airplane_type');
+    type_name = query.get_column('type_name');
+    max_seats = query.get_column('max_seats');
+    company = query.get_column('company');
+    type_data = []
+    for i in range(len(type_name)):
+        type_data.append('{0} made by {1} with {2} seats'.format(type_name[i], company[i], max_seats[i]));
+    return { 'type_name': type_name, 'type_data': type_data };
 
-#Get Leg Instances based on flight_number
+#END GET HELPERS
+
+#START HTML TABLE HELPER
+def get_html_table(type, table, headers, primarykeys, deletable=True):
+    html = '<div class="flightTable">';
+    html += '<div class="tr">';
+    for header in headers:
+        html += '<div class="th">{0}</div>'.format(header.replace('_', ' '));
+    if deletable:
+        html += '<div class="th">Commands</div>';
+    html += '</div>';
+    for j in range(len(table)):
+        html += '<div class="tr">'
+        if deletable:
+            data = '{' + '"type":"{0}"'.format(type);
+        for i in range(len(table[j])):
+            td = table[j][i]
+            if headers[i] in primarykeys:
+                if deletable:
+                    data += ',"{0}":"{1}"'.format(headers[i], td);
+            html += '<div class="td">{0}</div>'.format(td);
+        if deletable:
+            data += '}'
+            html += '''<div class="td"><button onclick="delete_row_item(this)" data='{0}'>Delete</button></div>'''.format(data);
+        html += '</div>';
+    html += '</div>';
+    return html;
+#END HTML TABLE HELPER
+
+#START GET QUERIES
 def leg_instance_update_get(flight_id):
-    flight_leg = flight_id.split(':');
+    flight_leg = flight_id.split(':') if flight_id != 'undefined' else ['',''];
     query = db.query('SELECT * from leg_instance li where li.flight_number = :fn and li.leg_number = :ln order by li.leg_date', {
         'fn': flight_leg[0], 'ln': flight_leg[1]});
-    return get_html_table(query.get_table(), query.get_headers());
+    return get_html_table('leg_instance', query.get_table(), query.get_headers(), ['flight_number', 'leg_number', 'leg_date']);
 
 def flight_leg_update_get(flight_number):
-    flight_number = flight_number;
     query = db.query('SELECT * from flight_leg f where f.flight_number = :fn order by f.leg_number',{'fn': flight_number});
-    return get_html_table(query.get_table(), query.get_headers());
+    return get_html_table('flight_leg', query.get_table(), query.get_headers(), ['flight_number', 'leg_number']);
 
+def flight_update_get():
+    query = db.query('SELECT * from flight');
+    return get_html_table('flight', query.get_table(), query.get_headers(), ['number']);
 
-def leg_instance_update_route():
-    flight_id = request.args.get('flight_id');
-    if not flight_id:
-        return jsonify({'status': 'error'});
-    return jsonify({'status': 'success', 'data': leg_instance_update_get(flight_id)});
+def airport_update_get():
+    query = db.query('SELECT * from airport');
+    return get_html_table('airport', query.get_table(), query.get_headers(), ['airport_code']);
 
-def flight_leg_update_route():
-    flight_number = request.args.get('flight_number');
-    if not flight_number:
-        return jsonify({'status': 'error'});
-    return jsonify({'status': 'success', 'data': flight_leg_update_get(flight_number)});
+def fares_update_get(number):
+    query = db.query('SELECT * from fares where flight_number = :fn', {'fn': number});
+    return get_html_table('fares', query.get_table(), query.get_headers(), ['flight_number', 'fare_code']);
+
+def airplane_type_update_get():
+    query = db.query('SELECT * from airplane_type');
+    return get_html_table('airplane_type', query.get_table(), query.get_headers(), ['type_name']);
+
+def can_land_update_get():
+    query = db.query('SELECT * from can_land');
+    return get_html_table('can_land', query.get_table(), query.get_headers(), ['airplane_type_name', 'airport_code']);
+
+def airplane_update_get(type_name):
+    query = db.query('SELECT * from airplane where airplane_type = :at',{'at': type_name});
+    return get_html_table('airplane', query.get_table(), query.get_headers(), ['airplane_id']);
+
+def seat_reservation_update_get():
+    query = db.query('SELECT * from seat_reservation');
+    return get_html_table('seat_reservation', query.get_table(), query.get_headers(), ['flight_number', 'leg_number','seat_date', 'seat_number'], False);
+
+#END GET QUERIES
+
+#START DELETE ROUTING
+def delete_item_route():
+    nan = request.args.get('data');
+    data = json.loads(nan);
+    data_type = data['type'];
+
+    if data_type == 'leg_instance':
+        db.delete_leg_instance(data['flight_number'], data['leg_number'], data['leg_date'])
+        print('Removed flight_number: {0}, leg_number: {1}, leg_date: {2} from leg_instance!'.format(
+            data['flight_number'], data['leg_number'], data['leg_date']));
+        return jsonify({'status': 'success'});
+    elif data_type == 'flight_leg':
+        db.delete_flight_leg(data['flight_number'], data['leg_number']);
+        print('Removed flight_number: {0}, leg_number: {1} from flight_leg!'.format(data['flight_number'], data['leg_number']));
+        return jsonify({'status': 'success'});
+    elif data_type == 'flight':
+        db.delete_flight(data['number']);
+        print('Removed flight: {0} from flight!'.format(data['number']));
+        return jsonify({'status': 'success'});
+    elif data_type == 'airport':
+        db.delete_airport(data['airport_code']);
+        print('Removed airport_code: {0} from airport!'.format(data['airport_code']));
+        return jsonify({'status': 'success'});
+    elif data_type == 'fares':
+        db.delete_fares(data['flight_number'], data['fare_code']);
+        print('Removed flight_number: {0}, fare_code: {1} from fares!'.format(data['flight_number'], data['fare_code']));
+        return jsonify({'status': 'success'});
+    elif data_type == 'airplane_type':
+        db.delete_airplane_type(data['type_name']);
+        print('Removed type_name: {0} from airplane_type!'.format(data['type_name']));
+        return jsonify({'status': 'success'});
+    elif data_type == 'can_land':
+        db.delete_can_land(data['airplane_type_name'], data['airport_code']);
+        print('Removed airplane_type_name: {0}, airport_code: {1} from can_land!'.format(data['airplane_type_name'], data['airport_code']));
+        return jsonify({'status': 'success'});
+    elif data_type == 'airplane':
+        db.delete_airplane(data['airplane_id']);
+        print('Removed airplane_id: {0} from airplane!'.format(data['airplane_id']));
+        return jsonify({'status': 'success'});
+
+    return jsonify({'status': 'error'});
+#END DELETE ROUTING

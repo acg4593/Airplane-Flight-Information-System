@@ -19,21 +19,21 @@ div.main {
     align-content: center;
 }
 
-div.flightData {
+.flightData {
     margin: 16px auto 16px auto;
     min-width: 1200px;
     max-width: 90%;
     display: flex;
 }
 
-div.flightHeader {
+.flightHeader {
     text-align: center;
     font-size: 36px;
     flex-basis: 32px;
     font-weight: bold;
 }
 
-div.flightTable {
+.flightTable {
     width: 100%;
     text-align: center;
     border-collapse: collapse;
@@ -49,6 +49,20 @@ div.flightTable {
     color: black;
 }
 
+.td button {
+    padding: none;
+    border: none;
+    background: none;
+    color: red;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-shadow:
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+}
+
 a.flightLink {
     cursor: pointer;
 }
@@ -57,7 +71,7 @@ a.flightLink:hover>.td {
     background-color: #c3fffa;
 }
 
-div.flightTable div.th, div.flightTable div.td {
+.flightTable .th, .flightTable .td {
     flex: 1;
     border-right: #000000 dashed 1px;
     border-bottom: black solid 2px;
@@ -66,29 +80,29 @@ div.flightTable div.th, div.flightTable div.td {
     justify-content: center;
     padding: 16px 16px;
 }
-div.flightTable div.th:last-child, div.flightTable div.td:last-child {
+.flightTable .th:last-child, .flightTable .td:last-child {
     border-right: none;
 }
 
-div.flightTable div.th {
+.flightTable .th {
     font-size: 18px;
 }
 
-div.flightTable .tr:nth-child(even) {
+.flightTable .tr:nth-child(even) {
     background-color: #ffffff;
 }
-div.flightTable .tr:nth-child(odd) {
+.flightTable .tr:nth-child(odd) {
     background-color: #e0e0e0;
 }
-div.flightTable .tr:first-child {
+.flightTable .tr:first-child {
     background-color: #b8c545;
 }
 
-div.flightTable .tr:last-child div.td, table.flightTable .tr:last-child div.th {
+.flightTable .tr:last-child .td, .flightTable .tr:last-child div.th {
     border-bottom: none;
 }
 
-div.header {
+.header {
     width: 100%;
     flex-basis: 96px;;
     display: flex;

@@ -8,58 +8,49 @@
         <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
     </head>
     <body>
-        <h1 class='header'>ADMIN CONSOLE</h1>
+        <div class='header'>
+            <h1 class='mainHead'>Admin Console</h1>
+            <div class='nav'>
+                <a class='navButton' href='/'>Home</a>
+            </div>
+        </div>
         <div class='content'>
-            <form id='leg_instance' method='POST' class='adminBox'>
+            <form id='leg_instance' onsubmit='submit_leg_instance();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Leg Instance</div>
                 </div>
                 <div class='row'>
                     <div class='title'>Flight Id:</div>
-                    <select id='flight_id' name='flight_id' required>
-                    {% for i in range(leg_instance_len_flight_id) %}
-                        <option value="{{leg_instance_flight_id[i]}}">{{leg_instance_flight_leg_data[i]}}</option>
-                    {% endfor %}
-                    </select>
+                    <select id='leg_instance_flight_id' name='flight_id' required>{{flight_leg | safe}}</select>
                 </div>
                 <div class='row'>
                     <div class='title'>Airplane Id:</div>
-                    <select name='airplane_id' required>
-                    {% for i in range(leg_instance_len_airplanes) %}
-                        <option value="{{leg_instance_airplane_id[i]}}">{{leg_instance_airplane_data[i]}}</option>
-                    {% endfor %}
-                    </select>
+                    <select id='leg_instance_airplane_id' name='airplane_id' required>{{airplane | safe}}</select>
                 </div>
                 <div class='row'>
                     <div class='title'>Leg date:</div>
-                    <input name='leg_date' type='date' required/>
+                    <input id='leg_instance_leg_date' name='leg_date' type='date' required/>
                 </div>
                 <div class='row'>
                     <div class='title'>Departure Time:</div>
-                    <input name='departure_time' type='datetime-local' required/>
+                    <input id='leg_instance_departure_time' name='departure_time' type='datetime-local' required/>
                 </div>
                 <div class='row'>
                     <div class='title'>Arrival Time:</div>
-                    <input name='arrival_time' type='datetime-local' required/>
+                    <input id='leg_instance_arrival_time' name='arrival_time' type='datetime-local' required/>
                 </div>
                 <div class='row'>
                     <input name='create_leg_instance' type='submit'/>
                 </div>
             </form>
-            <div id='leg_instance_update' class='adminBox'>
-
-            </div>
-            <form id='flight_leg' method='POST' class='adminBox'>
+            <div id='leg_instance_update' class='adminBox'></div>
+            <form id='flight_leg' onsubmit='submit_flight_leg();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Flight Leg</div>
                 </div>
                 <div class='row'>
                     <div class='title'>Flight:</div>
-                    <select id='flight_number' name='flight_number' required>
-                        {% for i in range(flight_leg_len_flight) %}
-                        <option value="{{flight_leg_flight_number[i]}}">{{flight_leg_flight_data[i]}}</option>
-                        {% endfor %}
-                    </select>
+                    <select id='flight_leg_flight_number' name='flight_number' required>{{flight | safe}}</select>
                    
                 </div>
                 <div class='row'>
@@ -68,27 +59,147 @@
                 </div>
                 <div class='row'>
                     <div class='title'>Departure Airport:</div>
-                    <select name='departure_airport_code' required>
-                        {% for i in range(flight_leg_len_airport) %}
-                        <option value="{{flight_leg_airport_code[i]}}">{{flight_leg_airport_data[i]}}</option>
-                        {% endfor %}
-                    </select>
+                    <select id='flight_leg_departure_airport_code' name='departure_airport_code' required>{{airport | safe}}</select>
                 </div>
                 <div class='row'>
                     <div class='title'>Arrival Airport:</div>
-                    <select name='arrival_airport_code' required>
-                        {% for i in range(flight_leg_len_airport) %}
-                        <option value="{{flight_leg_airport_code[i]}}">{{flight_leg_airport_data[i]}}</option>
-                        {% endfor %}
-                    </select>
+                    <select id='flight_leg_arrival_airport_code' name='arrival_airport_code' required>{{airport | safe}}</select>
                 </div>
                 <div class='row'>
                     <input name='create_flight_leg' type='submit'/>
                 </div>
             </form>
-            <div id='flight_leg_update' class='adminBox'>
-
+            <div id='flight_leg_update' class='adminBox'></div>
+            <form id='flight' onsubmit='submit_flight();return false;' method='POST' class='adminBox'>
+                <div class='row'>
+                    <div class='boxHeader'>Create Flight</div>
+                </div>
+                <div class='row'>
+                    <div class='title'>Number:</div>
+                    <input name='number' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Airline:</div>
+                    <input name='airline' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Weekdays:</div>
+                    <input name='weekdays' type='text' required/>
+                </div>
+                <div class='row'>
+                    <input name='create_flight' type='submit'/>
+                </div>
+            </form>
+            <div id='flight_update' class='adminBox'></div>
+            <form id='airport' onsubmit='submit_airport();return false;' method='POST' class='adminBox'>
+                <div class='row'>
+                    <div class='boxHeader'>Create Airport</div>
+                </div>
+                <div class='row'>
+                    <div class='title'>Airport Code:</div>
+                    <input name='airport_code' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Name:</div>
+                    <input name='name' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>City:</div>
+                    <input name='city' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>State:</div>
+                    <input name='state' type='text' required/>
+                </div>
+                <div class='row'>
+                    <input name='create_airport' type='submit'/>
+                </div>
+            </form>
+            <div id='airport_update' class='adminBox'></div>
+            <form id='fares' onsubmit='submit_fares();return false;' method='POST' class='adminBox'>
+                <div class='row'>
+                    <div class='boxHeader'>Create Fares</div>
+                </div>
+                <div class='row'>
+                    <div class='title'>Flight:</div>
+                    <select id='fares_flight_number' name='flight_number' required>{{flight | safe}}</select>
+                </div>
+                <div class='row'>
+                    <div class='title'>Fare Code:</div>
+                    <input name='fare_code' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Amount:</div>
+                    <input name='amount' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Restrictions:</div>
+                    <input name='restrictions' type='text' required/>
+                </div>
+                <div class='row'>
+                    <input name='create_fares' type='submit'/>
+                </div>
+            </form>
+            <div id='fares_update' class='adminBox'></div>
+            <form id='airplane_type' onsubmit='submit_airplane_type();return false;' method='POST' class='adminBox'>
+                <div class='row'>
+                    <div class='boxHeader'>Create Airplane Type</div>
+                </div>
+                <div class='row'>
+                    <div class='title'>Type Name:</div>
+                    <input name='type_name' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Max Seats:</div>
+                    <input name='max_seats' type='number' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Company:</div>
+                    <input name='company' type='text' required/>
+                </div>
+                <div class='row'>
+                    <input name='create_airplane_type' type='submit'/>
+                </div>
+            </form>
+            <div id='airplane_type_update' class='adminBox'></div>
+            <form id='can_land' onsubmit='submit_can_land();return false;' method='POST' class='adminBox'>
+                <div class='row'>
+                    <div class='boxHeader'>Create Can Land</div>
+                </div>
+                <div class='row'>
+                    <div class='title'>Airplane Type:</div>
+                    <select id='can_land_airplane_type_name' name='airplane_type_name' required>{{airplane_type | safe}}</select>
+                </div>
+                <div class='row'>
+                    <div class='title'>Airport:</div>
+                    <select id='can_land_airport_code' name='airport_code' required>{{airport | safe}}</select>
+                </div>
+                <div class='row'>
+                    <input name='create_can_land' type='submit'/>
+                </div>
+            </form>
+            <div id='can_land_update' class='adminBox'></div>
+            <form id='airplane' onsubmit='submit_airplane();return false;' method='POST' class='adminBox'>
+                <div class='row'>
+                    <div class='boxHeader'>Create Airplane</div>
+                </div>
+                <div class='row'>
+                    <div class='title'>Airplane Id:</div>
+                    <input name='airplane_id' type='text' required/>
+                </div>
+                <div class='row'>
+                    <div class='title'>Airplane Type:</div>
+                    <select id='airplane_airplane_type_name' name='type_name' required>{{airplane_type | safe}}</select>
+                </div>
+                <div class='row'>
+                    <input name='create_airplane' type='submit'/>
+                </div>
+            </form>
+            <div id='airplane_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button onclick='seat_reservation_toggle()'>Toggle Seat Reservations</button>
             </div>
+            <div id='seat_reservation_update' class='adminBox' style='display: none;'></div>
         </div>
     </body>
 </html>

@@ -1,27 +1,33 @@
-execution = [
-    'drop table if exists airport',
-    'drop table if exists flight',
-    'drop table if exists flight_leg',
-    'drop table if exists leg_instance',
-    'drop table if exists fares',
-    'drop table if exists airplane_type',
-    'drop table if exists can_land',
-    'drop table if exists airplane',
-    'drop table if exists seat_reservation',
-    'drop view IF EXISTS get_available_flights',
-    '''CREATE TABLE airport(
+import sqlite3
+
+tables = [ 
+    'airport', 'flight', 'flight_leg', 'leg_instance', 'fares',
+    'airplane_type', 'can_land', 'airplane', 'seat_reservation',
+    ]
+
+views = [
+    'get_available_flights'
+    ]
+
+triggers = [
+    'number_of_available_seats_trigger'
+]
+
+airport = '''CREATE TABLE airport(
         airport_code INT(10) NOT NULL,
         name VARCHAR(255) NOT NULL,
         city varchar(255) not null,
         state varchar(255) not null,
-        primary key(airport_code))''',
-    '''CREATE table flight(
+        primary key(airport_code))''';
+
+flight = '''CREATE table flight(
         number int(10) not null,
         airline varchar(255) not null,
         weekdays varchar(255) not null,
         primary key(number)
-        )''',
-    '''CREATE table flight_leg(
+        )''';
+
+flight_leg = '''CREATE table flight_leg(
         flight_number int(10) not null,
         leg_number int(10) not null,
         departure_airport_code int(10) not null,
@@ -29,9 +35,10 @@ execution = [
         arrival_airport_code int(10) not null,
         scheduled_arrival_time timestamp,
         primary key(flight_number, leg_number),
-        foreign key(flight_number) references flight(number)
-        )''',
-    '''CREATE table leg_instance(
+        foreign key(flight_number) references flight(number) ON DELETE CASCADE
+        )''';
+
+leg_instance = '''CREATE table leg_instance(
         flight_number int(10) not null,
         leg_number int(10) not null,
         leg_date timestamp not null,
@@ -42,40 +49,45 @@ execution = [
         arrival_airport_code int(10) not null,
         arrival_time timestamp,
         primary key(flight_number, leg_number, leg_date),
-        foreign key(flight_number, leg_number) references flight_leg(flight_number, leg_number),
-        foreign key(airplane_id) references airplane(airplane_id),
-        foreign key(departure_airport_code) references airport(airport_code),
-        foreign key(arrival_airport_code) references airport(airport_code)
-        )''',
-    '''CREATE table fares(
+        foreign key(flight_number, leg_number) references flight_leg(flight_number, leg_number) ON DELETE CASCADE,
+        foreign key(airplane_id) references airplane(airplane_id) ON DELETE CASCADE,
+        foreign key(departure_airport_code) references airport(airport_code) ON DELETE CASCADE,
+        foreign key(arrival_airport_code) references airport(airport_code) ON DELETE CASCADE
+        )''';
+
+fares = '''CREATE table fares(
         flight_number int(10) not null,
         fare_code int(10) not null,
         amount decimal(5,2) not null,
         restrictions varchar(255),
-        primary key(flight_number),
-        foreign key(flight_number) references flight(number)
-        )''',
-    '''CREATE table airplane_type(
+        primary key(flight_number, fare_code),
+        foreign key(flight_number) references flight(number) ON DELETE CASCADE
+        )''';
+
+airplane_type = '''CREATE table airplane_type(
         type_name varchar(255) not null,
         max_seats int(5) not null,
         company varchar(255) not null,
-        primary key(type_name)
-        )''',
-    '''CREATE table can_land(
+        primary key(type_name),
+        )''';
+
+can_land = '''CREATE table can_land(
         airplane_type_name varchar(255) not null,
         airport_code int(10) not null,
         primary key(airplane_type_name, airport_code),
-        foreign key(airplane_type_name) references  airplane_type(type_name),
-        foreign key(airport_code) references airport(airport_code)
-        )''',
-    '''CREATE table airplane(
+        foreign key(airplane_type_name) references  airplane_type(type_name) ON DELETE CASCADE,
+        foreign key(airport_code) references airport(airport_code) ON DELETE CASCADE
+        )''';
+
+airplane =  '''CREATE table airplane(
         airplane_id int(10) not null,
         total_number_of_seats int(5) not null,
         airplane_type varchar(255) not null,
         primary key(airplane_id),
-        foreign key(airplane_type) references airplane_type(type_name)
-        )''',
-    '''CREATE table seat_reservation(
+        foreign key(airplane_type) references airplane_type(type_name) ON DELETE CASCADE
+        )''';
+
+seat_reservation = '''CREATE table seat_reservation(
         flight_number int(10) not null,
         leg_number int(10) not null,
         seat_date timestamp not null,
@@ -83,9 +95,10 @@ execution = [
         customer_name varchar(255),
         customer_phone varchar(15),
         primary key(flight_number, leg_number, seat_date, seat_number),
-        foreign key(flight_number, leg_number, seat_date) references leg_instance(flight_number, leg_number, leg_date)
-        )''',
-    '''CREATE VIEW get_available_flights AS select 
+        foreign key(flight_number, leg_number, seat_date) references leg_instance(flight_number, leg_number, leg_date) ON DELETE CASCADE
+        )''';
+
+get_available_flights = '''CREATE VIEW get_available_flights AS select 
         l.flight_number as flight_number, 
         l.leg_number as leg_number, 
         s1.name as departure_airport, 
@@ -98,7 +111,11 @@ execution = [
         from leg_instance l, airport s1, airport s2
         where l.departure_airport_code = s1.airport_code
         and l.arrival_airport_code = s2.airport_code
-        and l.leg_date - date('now') > 0''',
+        and l.leg_date > date('now')''';
+
+
+
+inserts = [
     '''insert into airport values
         (292929, 'Santago Airport', 'Santago', 'Montanta'),
         (314030, 'Billywise Airport', 'Lammaton', 'Massachusetts'),
@@ -161,9 +178,30 @@ execution = [
         (116003, 0001,'2016-11-11',33,'JoeFatha',9109109920 ),
         (116003, 0001,'2016-11-11',34,'JoeSister',9109109940 ),
         (116003, 0001,'2016-11-11',42,'MarkJeston',9105303113 ),
-        (116003, 0001,'2016-11-11',04,'JoeMama',9109109910 )''',
-    
-]
+        (116003, 0001,'2016-11-11',04,'JoeMama',9109109910 )''',]
+
+leg_instance_number_of_available_seats_trigger = '''CREATE TRIGGER number_of_available_seats_trigger AFTER UPDATE ON leg_instance
+    BEGIN
+    UPDATE leg_instance
+    SET number_of_available_seats =  
+    (SELECT total_number_of_seats FROM airplane WHERE airplane.airplane_id = new.airplane_id) - 
+    (SELECT count(*) FROM seat_reservation WHERE flight_number = new.flight_number and leg_number = new.leg_number)
+    WHERE
+    flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.leg_date;
+    END
+    '''
+
+leg_instance_number_of_available_seats_trigger2 = '''CREATE TRIGGER number_of_available_seats_trigger AFTER UPDATE ON seat_reservation
+    BEGIN
+    UPDATE leg_instance
+    SET number_of_available_seats =  
+    (SELECT total_number_of_seats FROM airplane WHERE airplane.airplane_id = 
+    (SELECT airplane_id FROM leg_instance WHERE flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date)) - 
+    (SELECT count(*) FROM seat_reservation WHERE flight_number = new.flight_number and leg_number = new.leg_number)
+    WHERE
+    flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date;
+    END
+    '''
 
 view_example = '''
 CREATE view view AS select * from emp_master
@@ -192,8 +230,29 @@ executemany = """
 persons = [("first", "last"), (...)]; 
 con.executemany("INSERT INTO person(first, last) VALUES (?, ?)", persons)"""
 
-def rebuild(c, conn):
-    for code in execution:
-        c.execute(code);
-        conn.commit()
+if __name__ == "__main__":
+    with sqlite3.connect('database.db') as con:
+        c = con.cursor();
+        c.execute('PRAGMA foreign_keys = OFF');
+        for table in tables:
+            c.execute('DROP TABLE IF EXISTS {0}'.format(table));
+        for view in views:
+            c.execute('DROP VIEW IF EXISTS {0}'.format(view));
+        for trigger in triggers:
+            c.execute('DROP TRIGGER IF EXISTS {0}'.format(trigger));
+        c.execute(airport);
+        c.execute(flight);
+        c.execute(flight_leg);
+        c.execute(leg_instance);
+        c.execute(fares);
+        c.execute(airplane_type);
+        c.execute(can_land);
+        c.execute(airplane);
+        c.execute(seat_reservation);
+        c.execute(get_available_flights);
+        c.execute(leg_instance_number_of_available_seats_trigger);
+        c.execute(leg_instance_number_of_available_seats_trigger2);
+        for insert in inserts:
+            c.execute(insert);
+        c.execute('PRAGMA foreign_keys = ON');
     print('DATABASE HAS BEEN REBUILT')
