@@ -9,6 +9,13 @@ body {
     display: flex;
     flex-direction: column;
     background-color: #00bbbb;   
+    min-height: 100%;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 auto;
 }
 
 div.main {
@@ -24,6 +31,7 @@ div.main {
     min-width: 1200px;
     max-width: 90%;
     display: flex;
+    flex-direction: column;
 }
 
 .flightHeader {
@@ -74,7 +82,8 @@ a.flightLink:hover>.td {
 .flightTable .th, .flightTable .td {
     flex: 1;
     border-right: #000000 dashed 1px;
-    border-bottom: black solid 2px;
+    border-bottom: black solid 0.5px;
+    border-top: black solid 0.5px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -98,13 +107,9 @@ a.flightLink:hover>.td {
     background-color: #b8c545;
 }
 
-.flightTable .tr:last-child .td, .flightTable .tr:last-child div.th {
-    border-bottom: none;
-}
-
 .header {
     width: 100%;
-    flex-basis: 96px;;
+    flex-basis: 96px;
     display: flex;
     align-content: space-between;
     align-items: center;
@@ -124,21 +129,32 @@ div.nav {
     flex: 0.75;
 }
 
-a.navButton {
+.navButton {
     background-color: white;
     color: black;
     font-size: 1.5em;
     text-align: center;
     line-height: 40px;
-    width: 196px;
-    height: 40px;
+    padding: 4px 32px;
     margin: 0 32px;
     text-decoration: none;
     border: black solid 1px;
     border-radius: 10px;
     box-shadow: black 1px 1px 10px;
+    cursor: pointer;
 }
 
-a.navButton:hover {
+.navButton:hover {
     background-color: #b9b9b9;
+}
+
+.message {
+    display: flex;
+    font-size: 1.5em;
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 12px;
+    align-self: center;
 }

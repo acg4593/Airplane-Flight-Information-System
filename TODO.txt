@@ -1,5 +1,0 @@
-ADMIN CONSOLE
- - Create Leg Instance
-	- Selecting a Flight leg will show all times on right side for the currently selected one
- - Create Flight Leg
-	- Selecting Flight will show all flight legs associated with flight

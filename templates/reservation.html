@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{title}}</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/javascript/reservation.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/customer_select.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/reservation.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/overview.css"/>
+        <meta name='customer_name' content='{{customer_name}}'/>
+        <meta name='customer_phone' content='{{customer_phone}}'/>
+    </head>
+    <body>
+        <div class="header">
+            <img class="ff-logo" src="/static/images/ff-logo.png" width="128px" height="64px" alt="Foreman Flights">
+            <div class="nav">
+                <a class="navButton" href='/customer'>Plan Travel</a>
+                <a class="navButton" href='/reporting'>Flight Information</a>
+                <a class="navButton" href='/'>Home</a>
+            </div>
+        </div>
+        <div class="content">
+            {% if confirmation %} 
+                {{content|safe}}
+            {% else %}
+                {% if customer %}
+                    <div class='flightData'>{{reservations|safe}}</div>
+                    <div class='footer'>
+                        <button class='navButton' onclick='confirm_reservations()'>Confirm Reservations</button>
+                        <a class='navButton' href='/reservation_cancel'>Cancel Reservations</a>
+                    </div>
+                {% else %}
+                <form>
+                    <div class='bf'><input name='customer_name' type='text' placeholder='Full Name' required></div>
+                    <div class='bf'><input name='customer_phone' type='tel' pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}' placeholder='Phone: 123-456-7890' required></div>
+                    <div class='bf'><button class='navButton' onclick='find_reservations()'>Find Selected Seats</button></div>
+                    <div class='bf'><a class='navButton' href='/reservation_cancel'>Cancel Reservations</a></div>
+                </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </body>
+</html>

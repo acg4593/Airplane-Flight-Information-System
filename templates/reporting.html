@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trip Itinerary</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/javascript/reporting.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/overview.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/reporting.css"/>
+    </head>
+    <body>
+        <div class="header">
+            <img class="ff-logo" src="/static/images/ff-logo.png" width="128px" height="64px" alt="Foreman Flights">
+            <div class="nav">
+                <a class="navButton" href='/customer'>Plan Travel</a>
+                <a class="navButton" href='/'>Home</a>
+            </div>
+        </div>
+        <div class="content">
+            <div class='navigation'>
+                <button class='navButton' target='#flight_roster' onclick='navigate(this)'>Flight Roster</button>
+                <button class='navButton' target='#flight_schedule' onclick='navigate(this)'>Flight Schedule</button>
+                <button class='navButton' target='#flight_report' onclick='navigate(this)'>Flight Performance Report</button>
+            </div>
+            <div id='navigation_content' class='navigation_content'>
+                <div id='flight_roster' class='content {% if navigation == "flight_roster" %}show{% else %}hide{% endif %}'>Flight Roster</div>
+                <div id='flight_schedule' class='content {% if navigation == "flight_schedule" %}show{% else %}hide{% endif %}'>Flight Schedule</div>
+                <div id='flight_report' class='content {% if navigation == "flight_report" %}show{% else %}hide{% endif %}'>Flight Performance Report</div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -2,7 +2,7 @@ import sqlite3
 
 tables = [ 
     'airport', 'flight', 'flight_leg', 'leg_instance', 'fares',
-    'airplane_type', 'can_land', 'airplane', 'seat_reservation',
+    'airplane_type', 'can_land', 'airplane', 'seat_reservation', 'seat_fares',
     ]
 
 views = [
@@ -10,7 +10,7 @@ views = [
     ]
 
 triggers = [
-    'number_of_available_seats_trigger'
+    'noas_trigger_update', 'noas_trigger_insert', 'noas_trigger_delete'
 ]
 
 airport = '''CREATE TABLE airport(
@@ -68,7 +68,7 @@ airplane_type = '''CREATE table airplane_type(
         type_name varchar(255) not null,
         max_seats int(5) not null,
         company varchar(255) not null,
-        primary key(type_name),
+        primary key(type_name)
         )''';
 
 can_land = '''CREATE table can_land(
@@ -98,7 +98,17 @@ seat_reservation = '''CREATE table seat_reservation(
         foreign key(flight_number, leg_number, seat_date) references leg_instance(flight_number, leg_number, leg_date) ON DELETE CASCADE
         )''';
 
-get_available_flights = '''CREATE VIEW get_available_flights AS select 
+seat_fares = '''CREATE table seat_fares(
+    flight_number int(10) not null,
+    leg_number int(10) not null,
+    seat_date timestamp not null,
+    seat_number int(5) not null,
+    fare_code int(10) not null,
+    primary key(flight_number, leg_number, seat_date, seat_number),
+    foreign key(flight_number, leg_number, seat_date, seat_number) references seat_reservation(flight_number, leg_number, seat_date, seat_number) ON DELETE CASCADE
+    )'''
+
+get_available_flights = '''CREATE VIEW get_available_flights AS SELECT 
         l.flight_number as flight_number, 
         l.leg_number as leg_number, 
         s1.name as departure_airport, 
@@ -107,11 +117,12 @@ get_available_flights = '''CREATE VIEW get_available_flights AS select
         l.leg_date as departure_date, 
         s2.name as arrival_airport, 
         s2.city as arrival_city, 
-        s2.state as arrival_state
-        from leg_instance l, airport s1, airport s2
-        where l.departure_airport_code = s1.airport_code
-        and l.arrival_airport_code = s2.airport_code
-        and l.leg_date > date('now')''';
+        s2.state as arrival_state,
+        l.number_of_available_seats as available_seats
+        FROM leg_instance l, airport s1, airport s2
+        WHERE l.departure_airport_code = s1.airport_code
+        AND l.arrival_airport_code = s2.airport_code
+        AND l.leg_date > datetime('now', 'localtime') ORDER BY departure_date ASC''';
 
 
 
@@ -180,24 +191,35 @@ inserts = [
         (116003, 0001,'2016-11-11',42,'MarkJeston',9105303113 ),
         (116003, 0001,'2016-11-11',04,'JoeMama',9109109910 )''',]
 
-leg_instance_number_of_available_seats_trigger = '''CREATE TRIGGER number_of_available_seats_trigger AFTER UPDATE ON leg_instance
+noas_trigger_update = '''CREATE TRIGGER noas_trigger_update AFTER UPDATE ON seat_reservation
     BEGIN
     UPDATE leg_instance
     SET number_of_available_seats =  
-    (SELECT total_number_of_seats FROM airplane WHERE airplane.airplane_id = new.airplane_id) - 
-    (SELECT count(*) FROM seat_reservation WHERE flight_number = new.flight_number and leg_number = new.leg_number)
+    (SELECT total_number_of_seats FROM airplane WHERE airplane.airplane_id in
+    (SELECT airplane_id FROM leg_instance WHERE flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date)) - 
+    (SELECT count(*) FROM seat_reservation WHERE flight_number = new.flight_number AND leg_number = new.leg_number AND leg_date = new.seat_date AND customer_name is not null AND customer_phone is not null)
     WHERE
-    flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.leg_date;
+    flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date;
     END
     '''
-
-leg_instance_number_of_available_seats_trigger2 = '''CREATE TRIGGER number_of_available_seats_trigger AFTER UPDATE ON seat_reservation
+noas_trigger_insert = '''CREATE TRIGGER noas_trigger_insert AFTER INSERT ON seat_reservation
     BEGIN
     UPDATE leg_instance
     SET number_of_available_seats =  
-    (SELECT total_number_of_seats FROM airplane WHERE airplane.airplane_id = 
+    (SELECT total_number_of_seats FROM airplane WHERE airplane.airplane_id in
     (SELECT airplane_id FROM leg_instance WHERE flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date)) - 
-    (SELECT count(*) FROM seat_reservation WHERE flight_number = new.flight_number and leg_number = new.leg_number)
+    (SELECT count(*) FROM seat_reservation WHERE flight_number = new.flight_number AND leg_number = new.leg_number AND leg_date = new.seat_date AND customer_name is not null AND customer_phone is not null)
+    WHERE
+    flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date;
+    END
+    '''
+noas_trigger_delete = '''CREATE TRIGGER noas_trigger_delete AFTER DELETE ON seat_reservation
+    BEGIN
+    UPDATE leg_instance
+    SET number_of_available_seats =  
+    (SELECT total_number_of_seats FROM airplane WHERE airplane.airplane_id in
+    (SELECT airplane_id FROM leg_instance WHERE flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date)) - 
+    (SELECT count(*) FROM seat_reservation WHERE flight_number = new.flight_number AND leg_number = new.leg_number AND leg_date = new.seat_date AND customer_name is not null AND customer_phone is not null)
     WHERE
     flight_number = new.flight_number and leg_number = new.leg_number and leg_date = new.seat_date;
     END
@@ -234,12 +256,16 @@ if __name__ == "__main__":
     with sqlite3.connect('database.db') as con:
         c = con.cursor();
         c.execute('PRAGMA foreign_keys = OFF');
+        print('[REBUILD]', 'Dropping Tables...');
         for table in tables:
             c.execute('DROP TABLE IF EXISTS {0}'.format(table));
+        print('[REBUILD]', 'Dropping Views...');
         for view in views:
             c.execute('DROP VIEW IF EXISTS {0}'.format(view));
+        print('[REBUILD]', 'Dropping Triggers...');
         for trigger in triggers:
             c.execute('DROP TRIGGER IF EXISTS {0}'.format(trigger));
+        print('[REBUILD]', 'Creating Tables...');
         c.execute(airport);
         c.execute(flight);
         c.execute(flight_leg);
@@ -249,10 +275,16 @@ if __name__ == "__main__":
         c.execute(can_land);
         c.execute(airplane);
         c.execute(seat_reservation);
+        c.execute(seat_fares);
+        print('[REBUILD]', 'Creating Views...');
         c.execute(get_available_flights);
-        c.execute(leg_instance_number_of_available_seats_trigger);
-        c.execute(leg_instance_number_of_available_seats_trigger2);
+        print('[REBUILD]', 'Creating Triggers...');
+        #c.execute(leg_instance_number_of_available_seats_trigger);
+        c.execute(noas_trigger_insert);
+        c.execute(noas_trigger_update);
+        c.execute(noas_trigger_delete);
+        print('[REBUILD]', 'Inserting Data...');
         for insert in inserts:
             c.execute(insert);
         c.execute('PRAGMA foreign_keys = ON');
-    print('DATABASE HAS BEEN REBUILT')
+    print('[REBUILD]', 'Database has been rebuilt!');

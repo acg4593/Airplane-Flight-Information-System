@@ -1,9 +1,11 @@
 from flask import Flask, send_from_directory
 from pagepy.adminPage import *
-from pagepy.indexPage import indexRoute
-from pagepy.customerPage import customerRoute
-from pagepy.loginPage import loginRoute
-from pysqlite.SqliteApp import sqldbRoute
+from pagepy.indexPage import *
+from pagepy.customerPage import *
+from pagepy.loginPage import *
+from pagepy.itinerary import *
+from pagepy.reporting import *
+from pysqlite.SqliteApp import *
 import os;
 
 app = Flask(__name__)
@@ -49,9 +51,49 @@ def admin_select():
 
 #START CUSTOMER
 @app.route("/customer")
-def loadCustomer():
-    return customerRoute()
+def load_customer():
+    return customer_route();
+
+@app.route('/customer/select')
+def load_customer_select():
+    return customer_select_route()
+
+@app.route('/customer/search')
+def load_customer_search():
+    return customer_search_route();
+
+@app.route('/reserve')
+def post_reserve():
+    return post_reservation();
+
+@app.route('/reservation')
+def load_customer_reservation():
+    return customer_reservation_route();
+
+@app.route('/reservation_cancel')
+def load_customer_reservation_cancel():
+    return customer_reservation_cancel_route();
+
+@app.route('/cancel_reservation_for')
+def load_customer_cancel_reservation_for():
+    return customer_cancel_reservation_for_route();
 #END CUSTOMER
+
+#START ITINERARY
+
+@app.route('/itinerary')
+def load_itinerary():
+    return itinerary_route()
+
+#END ITINERARY
+
+#START REPORTING
+
+@app.route('/reporting')
+def load_reporting():
+    return reporting_route()
+
+#END REPORTING
 
 @app.after_request
 def add_header(r):

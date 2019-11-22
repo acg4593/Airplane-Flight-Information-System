@@ -112,8 +112,7 @@ function update_leg_instance_leg_date() {
     const parse = minVal.split('-');
     const min = minVal + 'T00:00:00'
     const minDate = new Date(parse[0], parse[1] - 1, parse[2]);
-    const maxDate = new Date();
-    maxDate.setDate(minDate.getDate() + 1);
+    const maxDate = new Date(minDate.setDate(minDate.getDate() + 1));
     const md = {dd: maxDate.getDate(), mm: maxDate.getMonth() + 1,yyyy:  maxDate.getFullYear()};
     const max = md.yyyy + '-' + md.mm+'-'+md.dd + 'T23:00:00';
     $('#leg_instance_departure_time').attr('min', min);

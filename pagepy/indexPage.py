@@ -2,16 +2,17 @@ from flask import render_template
 from constants import keys
 from extras import randomString
 import os, time, datetime
-from pysqlite.SqliteApp import get_available_flights, get_all_flights
+from pysqlite.SqliteApp import *
 from extras import table_to_html
 
 def indexRoute():
-    response = get_available_flights();
+    response = get_available_flights(25);
     flight_number = response.remove_column('flight_number');
     leg_number = response.remove_column('leg_number');
+    seat_date = response.get_column('departure_date');
     custom_links_href = [];
     for i in range(len(flight_number)):
-        custom_links_href.append("/customer?flight_number={0}&leg_number={1}".format(flight_number[i],leg_number[i]));
+        custom_links_href.append("/customer/select?flight_number={0}&leg_number={1}&seat_date={2}".format(flight_number[i],leg_number[i],seat_date[i]));
 
     html = table_to_html(
         table=response.get_table(),

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trip Itinerary</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/javascript/itinerary.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/customer_select.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/reservation.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/overview.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/itinerary.css"/>
+    </head>
+    <body>
+        <div class="header">
+            <img class="ff-logo" src="/static/images/ff-logo.png" width="128px" height="64px" alt="Foreman Flights">
+            <div class="nav">
+                <a class="navButton" href='/customer'>Plan Travel</a>
+                <a class="navButton" href='/reporting'>Flight Information</a>
+                <a class="navButton" href='/'>Home</a>
+            </div>
+        </div>
+        <div class="content">
+            {% if customer %}
+                <div class='print'>
+                    <div class='print_header'>Booking Information</div>
+                    <div class='print_head'>
+                        <div class='data_row'>
+                            <div class='row_key'>Today's Date:</div>
+                            <div class='row_value'>{{date}}</div>
+                        </div>
+                        <div class='data_row'>
+                            <div class='row_key'>Phone:</div>
+                            <div class='row_value'>{{customer_phone}}</div>
+                        </div>
+                        <div class='data_row'>
+                            <div class='row_key'>Passenger:</div>
+                            <div class='row_value'>{{customer_name}}</div>
+                        </div>
+                    </div>
+                    <div class='print_row'>
+                        <div class='print_col'>
+                            <div class='print_header'>Traveler Information</div>
+                            {{flight_data|safe}}
+                        </div>
+                        <div class='print_col'>
+                            <div class='print_header'>Price Summary</div>
+                            {{price_data|safe}}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <form>
+                    <div class='bf'><input name='customer_name' type='text' placeholder='Full Name' required></div>
+                    <div class='bf'><input name='customer_phone' type='tel' pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}' placeholder='Phone: 123-456-7890' required></div>
+                    <div class='bf'><button class='navButton' onclick='load_itinerary()'>Load Itinerary</button></div>
+                </form>
+            {% endif %}
+        </div>
+    </body>
+</html>

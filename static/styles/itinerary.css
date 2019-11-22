@@ -1,0 +1,154 @@
+.print {
+    display: flex;
+    flex: 1 auto;
+    flex-direction: column;
+}
+
+.print_row {
+    display: flex;
+    flex-direction: row;
+    margin-top: 25px;
+
+}
+
+.print_col {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    margin: 0 16px;
+}
+
+.print_header {
+    font-size: 2em;
+    color: #e7b954;
+    text-shadow:
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+}
+
+.print_head {
+    margin: 16px;
+    width: 50%;
+    background-color: #ffffff;
+    border: 1px solid black;
+}
+
+.data_row {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px dashed black;
+}
+
+.data_row:last-child {
+    border-bottom: none;
+}
+
+.row_key {
+    margin-left: 10%;
+    text-align: left;
+    flex: 1 1 auto;
+    padding: 12px;
+    font-size: 1.25em;
+}
+
+.row_value {
+    margin-right: 10%;
+    text-align: right;
+    flex: 1 1 auto;
+    padding: 12px;
+    font-size: 1.25em;
+}
+
+.trip_content {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    margin-bottom: 50px;
+}
+
+.trip_head {
+    display: flex;
+    flex-direction: column;
+    background-color: #e7b954;
+    padding: 16px;
+    margin: 0.5px;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.trip_body {
+    display: flex;
+    flex-direction: column;
+}
+
+.trip_row {
+    display: flex;
+    flex-direction: row;
+    padding: 12px;
+    border-bottom: 1px dashed black;
+    text-align: center;
+    font-size: 1.25em;
+}
+
+.trip_row:last-child {
+    border-bottom: none;
+}
+
+.trip_key {
+    text-align: center;
+    flex: 1 1 auto;
+}
+
+.trip_value {
+    text-align: center;
+    flex: 1 1 auto;
+}
+
+.price_content {
+    background-color: #ffffff;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+}
+
+.price_row {
+    display: flex;
+    flex-direction: row;
+    padding: 16px;
+    border-bottom: 1px dashed black;
+    font-size: 1.25em;
+}
+
+.price_row:last-child {
+    border-bottom: none;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.price_key {
+    padding-left: 20%;
+    flex: 1 1 auto;
+    text-align: left;
+}
+
+.price_value {
+    padding-right: 20%;
+    flex: 1 1 auto;
+    text-align: right;
+}
+
+@media print {
+    .header {
+        display: none;
+    }
+
+    @page 
+    {
+        size: portrait;
+        margin: 0;
+    }
+
+}

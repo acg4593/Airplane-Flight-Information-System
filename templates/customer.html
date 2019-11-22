@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>{{title}}</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script type="text/javascript" src="/static/javascript/customer.js"></script>
         <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
         <link rel="stylesheet" type="text/css" href="/static/styles/customer.css"/>
@@ -11,50 +12,28 @@
         <div class="header">
             <img class="ff-logo" src="/static/images/ff-logo.png" width="128px" height="64px" alt="Foreman Flights">
             <div class="nav">
+                <a class='navButton' href='/itinerary'>Trip Itinerary</a>
+                <a class='navButton' href='/reservation'>Reservations</a>
                 <a class="navButton" href='/reporting'>Flight Information</a>
                 <a class="navButton" href='/'>Home</a>
             </div>
         </div>
-        {% if (not search and not selected) or (search and selected) %}
         <div id="main" class="content">
             <div class="flightHeader">Current Flights</div>
-            <div class="flightData">
-                {{flightData|safe}}
-            </div>
-        </div>
-        {% endif %}
-        {% if search and not selected %}
-        <div id="search" class="content">
-            Search
-        </div>
-        {% endif %}
-        {% if selected and not search %}
-        <div id="selected" class="content">
-            Selected
-        </div>
-        {% endif %}
-        {% if False%}
-        <div id="cancel" class="content">
-            <form>
-                <div>
-                    <div>Name</div>
-                    <input type="text">
+            <form id='viewport_query' onsubmit='get_flight_viewport_form();return false;' class='flightQuery'>
+                <div class='queryRow'>
+                    <div class='queryTitle'>From:</div>
+                    <input name='from' type='search' placeholder='city or airport'/>
+                    <div class='queryTitle'>To:</div>
+                    <input name='to' type='search' placeholder='city or airport'/>
+                    <div class='queryTitle'>Depart:</div>
+                    <input name='depart' type='date'/>
                 </div>
-                <div>
-                    <div>phone</div>
-                    <input type="phone">
-                </div>
-                <div>
-                    <input type="submit">
+                <div class='queryRow'>
+                    <input name='search' type='submit' value='Search for Flight' />
                 </div>
             </form>
-
-            <div>
-
-            ...Query
-
-            </div>
+            <div id='flights_viewport' class="flightData"></div>
         </div>
-        {% endif %}
     </body>
 </html>

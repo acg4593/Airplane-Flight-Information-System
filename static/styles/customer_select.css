@@ -1,0 +1,61 @@
+.tr-0 div{
+    background-color: #ffffff;
+}
+.tr-1 div{
+    background-color: #e0e0e0;
+}
+
+.radio_seat {
+    display: contents;
+}
+
+.radio_seat:checked ~ .tr div{
+    background-color: lightcoral;
+    border-top: 1px solid red;
+    border-bottom: 1px solid red;
+}
+
+.radio_seat:checked ~ .tr div:first-child{
+    border-left: 1px solid red;
+}
+
+.radio_seat:checked ~ .tr div:last-child{
+    border-right: 1px solid red;
+}
+
+
+
+.bf {
+    display: flex;
+    padding: 12px;
+    align-content: center;
+    justify-content: center;
+}
+
+.bf * {
+    padding: 12px;
+}
+
+.bf input {
+    font-size: 16px;
+    border: 1px solid black;
+}
+
+.fares {
+    background-color: white;
+    font-size: 22px;
+    border: 1px solid black;
+}
+
+.footer {
+    border-top: 1px solid black;
+    display: flex;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: #ffffff;
+    margin-top: auto;
+}
+
+.footer *:last-child {
+    margin-left: auto;
+}
