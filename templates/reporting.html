@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Trip Itinerary</title>
+        <title>Reporting</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script type="text/javascript" src="/static/javascript/reporting.js"></script>
         <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
         <link rel="stylesheet" type="text/css" href="/static/styles/overview.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/customer.css"/>
         <link rel="stylesheet" type="text/css" href="/static/styles/reporting.css"/>
     </head>
     <body>
@@ -23,9 +24,105 @@
                 <button class='navButton' target='#flight_report' onclick='navigate(this)'>Flight Performance Report</button>
             </div>
             <div id='navigation_content' class='navigation_content'>
-                <div id='flight_roster' class='content {% if navigation == "flight_roster" %}show{% else %}hide{% endif %}'>Flight Roster</div>
-                <div id='flight_schedule' class='content {% if navigation == "flight_schedule" %}show{% else %}hide{% endif %}'>Flight Schedule</div>
-                <div id='flight_report' class='content {% if navigation == "flight_report" %}show{% else %}hide{% endif %}'>Flight Performance Report</div>
+                <div id='flight_roster' class='content {% if navigation == "flight_roster" %}show{% else %}hide{% endif %}'>
+                    <form id='roster_query' onsubmit='get_flight_roster();return false;' class='flightQuery'>
+                        <div class='queryRow'>
+                            <div class='queryTitle'>Flight Number:</div>
+                            <input name='flight_number' type='number' placeholder='######'/>
+                            <div class='queryTitle'>Leg Number:</div>
+                            <input name='leg_number' type='number' placeholder='##'/>
+                        </div>
+                        <div class='queryRow'>
+                            <div class='queryTitle'>Year:</div>
+                            <input name='year' type='search' placeholder='1997'/>
+                            <div class='queryTitle'>Month:</div>
+                            <select name='month'>
+                                <option value='01'>January</option>
+                                <option value='02'>February</option>
+                                <option value='03'>March</option>
+                                <option value='04'>April</option>
+                                <option value='05'>May</option>
+                                <option value='06'>June</option>
+                                <option value='07'>July</option>
+                                <option value='08'>August</option>
+                                <option value='09'>September</option>
+                                <option value='10'>October</option>
+                                <option value='11'>November</option>
+                                <option value='12'>December</option>
+                            </select>
+                        </div>
+                        <div class='queryRow'>
+                            <input name='search' type='submit' value='Load Flight Roster' />
+                        </div>
+                    </form>
+                    <div id='roster_placeholder' class='content'></div>
+                </div>
+                <div id='flight_schedule' class='content {% if navigation == "flight_schedule" %}show{% else %}hide{% endif %}'>
+                    <form id='schedule_query' onsubmit='get_flight_schedule();return false;' class='flightQuery'>
+                        <div class='queryRow'>
+                            <div class='queryTitle'>Airline:</div>
+                            <input name='airline' type='text' placeholder='Name of Airline'/>
+                            <div class='queryTitle'>Departure City:</div>
+                            <input name='departure_city' type='text' placeholder='City Name'/>
+                            <div class='queryTitle'>Arrival City:</div>
+                            <input name='arrival_city' type='text' placeholder='City Name'/>
+                        </div>
+                        <div class='queryRow'>
+                            <div class='queryTitle'>Year:</div>
+                            <input name='year' type='search' placeholder='1997'/>
+                            <div class='queryTitle'>Month:</div>
+                            <select name='month'>
+                                <option value='01'>January</option>
+                                <option value='02'>February</option>
+                                <option value='03'>March</option>
+                                <option value='04'>April</option>
+                                <option value='05'>May</option>
+                                <option value='06'>June</option>
+                                <option value='07'>July</option>
+                                <option value='08'>August</option>
+                                <option value='09'>September</option>
+                                <option value='10'>October</option>
+                                <option value='11'>November</option>
+                                <option value='12'>December</option>
+                            </select>
+                        </div>
+                        <div class='queryRow'>
+                            <input name='search' type='submit' value='Load Flight Schedule'/>
+                        </div>
+                    </form>
+                    <div id='schedule_placeholder' class='content'></div>
+                </div>
+                <div id='flight_report' class='content {% if navigation == "flight_report" %}show{% else %}hide{% endif %}'>
+                    <form id='report_query' onsubmit='get_flight_report();return false;' class='flightQuery'>
+                        <div class='queryRow'>
+                            <div class='queryTitle'>Airline:</div>
+                            <input name='airline' type='text' placeholder='Name of Airline'/>
+                        </div>
+                        <div class='queryRow'>
+                            <div class='queryTitle'>Year:</div>
+                            <input name='year' type='search' placeholder='1997'/>
+                            <div class='queryTitle'>Month:</div>
+                            <select name='month'>
+                                <option value='01'>January</option>
+                                <option value='02'>February</option>
+                                <option value='03'>March</option>
+                                <option value='04'>April</option>
+                                <option value='05'>May</option>
+                                <option value='06'>June</option>
+                                <option value='07'>July</option>
+                                <option value='08'>August</option>
+                                <option value='09'>September</option>
+                                <option value='10'>October</option>
+                                <option value='11'>November</option>
+                                <option value='12'>December</option>
+                            </select>
+                        </div>
+                        <div class='queryRow'>
+                            <input name='search' type='submit' value='Load Flight Report'/>
+                        </div>
+                    </form>
+                    <div id='report_placeholder' class='content'></div>
+                </div>
             </div>
         </div>
     </body>

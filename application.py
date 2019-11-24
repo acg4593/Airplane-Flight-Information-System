@@ -93,6 +93,18 @@ def load_itinerary():
 def load_reporting():
     return reporting_route()
 
+@app.route('/roster_request')
+def load_roster_request():
+    return get_roster_route()
+
+@app.route('/schedule_request')
+def load_schedule_request():
+    return get_schedule_route()
+
+@app.route('/report_request')
+def load_report_request():
+    return get_report_route()
+
 #END REPORTING
 
 @app.after_request

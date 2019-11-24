@@ -17,3 +17,37 @@
     border: 1px solid black;
     border-radius: 10px;
 }
+
+.day {
+    text-align: center;
+    font-weight: bold;
+}
+
+.leg {
+    border-bottom: 1px dashed black;
+    padding-bottom: 25px;
+    padding-top: 25px;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.leg:last-child {
+    border-bottom: none;
+}
+
+@media print {
+    .header, .navigation, .flightQuery {
+        display: none;
+    }
+    @page 
+    {
+        size: landscape;
+        margin: 0;
+    }
+}

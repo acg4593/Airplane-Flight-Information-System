@@ -43,7 +43,10 @@
                     <input name='create_leg_instance' type='submit'/>
                 </div>
             </form>
-            <div id='leg_instance_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#leg_instance_update' onclick='toggle(this)'>Toggle</button>
+                <div id='leg_instance_update' style='display: none;'></div>
+            </div>
             <form id='flight_leg' onsubmit='submit_flight_leg();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Flight Leg</div>
@@ -69,7 +72,10 @@
                     <input name='create_flight_leg' type='submit'/>
                 </div>
             </form>
-            <div id='flight_leg_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#flight_leg_update' onclick='toggle(this)'>Toggle</button>
+                <div id='flight_leg_update' style='display: none;'></div>
+            </div>
             <form id='flight' onsubmit='submit_flight();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Flight</div>
@@ -90,7 +96,10 @@
                     <input name='create_flight' type='submit'/>
                 </div>
             </form>
-            <div id='flight_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#flight_update' onclick='toggle(this)'>Toggle</button>
+                <div id='flight_update' style='display: none;'></div>
+            </div>
             <form id='airport' onsubmit='submit_airport();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Airport</div>
@@ -115,7 +124,10 @@
                     <input name='create_airport' type='submit'/>
                 </div>
             </form>
-            <div id='airport_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#airport_update' onclick='toggle(this)'>Toggle</button>
+                <div id='airport_update' style='display: none;'></div>
+            </div>
             <form id='fares' onsubmit='submit_fares();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Fares</div>
@@ -140,7 +152,10 @@
                     <input name='create_fares' type='submit'/>
                 </div>
             </form>
-            <div id='fares_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#fares_update' onclick='toggle(this)'>Toggle</button>
+                <div id='fares_update' style='display: none;'></div>
+            </div>
             <form id='airplane_type' onsubmit='submit_airplane_type();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Airplane Type</div>
@@ -161,7 +176,10 @@
                     <input name='create_airplane_type' type='submit'/>
                 </div>
             </form>
-            <div id='airplane_type_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#airplane_type_update' onclick='toggle(this)'>Toggle</button>
+                <div id='airplane_type_update' style='display: none;'></div>
+            </div>
             <form id='can_land' onsubmit='submit_can_land();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Can Land</div>
@@ -178,7 +196,10 @@
                     <input name='create_can_land' type='submit'/>
                 </div>
             </form>
-            <div id='can_land_update' class='adminBox'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#can_land_update' onclick='toggle(this)'>Toggle</button>
+                <div id='can_land_update' style='display: none;'></div>
+            </div>
             <form id='airplane' onsubmit='submit_airplane();return false;' method='POST' class='adminBox'>
                 <div class='row'>
                     <div class='boxHeader'>Create Airplane</div>
@@ -195,11 +216,14 @@
                     <input name='create_airplane' type='submit'/>
                 </div>
             </form>
-            <div id='airplane_update' class='adminBox'></div>
             <div class='adminBox'>
-                <button onclick='seat_reservation_toggle()'>Toggle Seat Reservations</button>
+                <button class='toggle_button' target='#airplane_update' onclick='toggle(this)'>Toggle</button>
+                <div id='airplane_update' style='display: none;'></div>
             </div>
-            <div id='seat_reservation_update' class='adminBox' style='display: none;'></div>
+            <div class='adminBox'>
+                <button class='toggle_button' target='#seat_reservation_update' onclick='toggle(this)'>Toggle</button>
+                <div id='seat_reservation_update' style='display: none;'></div>
+            </div>
         </div>
     </body>
 </html>

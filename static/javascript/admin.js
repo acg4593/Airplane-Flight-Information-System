@@ -291,8 +291,9 @@ function delete_row_item(item) {
 
 //START SEAT RESERVATION TOGGLE
 
-function seat_reservation_toggle() {
-    $('#seat_reservation_update').toggle();
+function toggle(element) {
+    target = $(element).attr('target')
+    $(target).toggle();
 }
 
 //END SEAT RESERVATION TOGGLE

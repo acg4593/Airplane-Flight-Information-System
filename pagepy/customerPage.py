@@ -149,6 +149,7 @@ def seat_table(response):
     for header in response.get_headers():
         html += "<div class='th'>{0}</div>".format(header.replace('_', ' '))
     html += "</div>"
+    html += "<input id='-1' class='radio_seat hide' type='radio' name='seat_number' value=-1 required>"
     for j in range(len(response.get_table())):
         html += "<div><input id='{0}' class='radio_seat' type='radio' name='seat_number' value={0} required>".format(seat_number[j])
         html += "<label for='{0}' class='tr tr-{1}'>".format(seat_number[j], j % 2)
@@ -173,10 +174,18 @@ def fare_table(response):
 
 def get_available_flight_with_args(from_city_or_airport, to_city_or_airport, date):
     return db.query('''SELECT * FROM get_available_flights WHERE 
-    (CASE WHEN (:dd <> '') THEN (departure_date = :dd) ELSE (departure_date <> :dd) END)
-    AND  (CASE WHEN (:fcoa  <> '') THEN (departure_city = :fcoa OR departure_airport = :fcoa) ELSE (departure_city <> :fcoa) END)
-    AND (CASE WHEN (:tcoa <> '') THEN (arrival_city = :tcoa OR arrival_airport = :tcoa) ELSE (arrival_city <> :tcoa) END)''',
-    {'fcoa': from_city_or_airport, 'tcoa': to_city_or_airport, 'dd': date});
+    CASE WHEN (:dd <> '') 
+        THEN departure_date = :dd
+        ELSE departure_date <> :dd END
+    AND
+    CASE WHEN (:fcoa  <> '') 
+        THEN lower(departure_city) = lower(:fcoa) OR lower(departure_airport) = lower(:fcoa) 
+        ELSE lower(departure_city) <> lower(:fcoa) END
+    AND
+    CASE WHEN (:tcoa <> '') 
+        THEN lower(arrival_city) = lower(:tcoa) OR lower(arrival_airport) = lower(:tcoa) 
+        ELSE lower(arrival_city) <> lower(:tcoa) END
+    LIMIT 100''', {'fcoa': from_city_or_airport, 'tcoa': to_city_or_airport, 'dd': date});
 
 def customer_search_route():
     from_city_or_airport = request.args['from'];

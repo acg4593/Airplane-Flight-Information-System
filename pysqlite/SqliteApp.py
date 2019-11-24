@@ -2,6 +2,7 @@ import sqlite3
 from flask import request
 from pysqlite.SqlResponse import SqlResponse, sql_response_from_cursor
 from extras import table_to_html
+from constants import flight_leg_timer_check
 
 #START QUERY HELPERS
 def query(query, paramaters={}):
@@ -25,13 +26,63 @@ def get_all_flights():
         print('[QUERY]', 'get_all_flights()', "Executed Successfully!");
         return sql_response_from_cursor(c)
 
-def get_available_flights(limitCount=500):
+def get_available_flights(limitCount=100):
     print('[QUERY]', 'get_available_flights()')
     with sqlite3.connect('database.db') as con:
         c = con.cursor()
         c.execute("SELECT * FROM get_available_flights LIMIT :lc", {'lc':limitCount});
         print('[QUERY]', 'get_available_flights()', "Executed Successfully!");
         return sql_response_from_cursor(c)
+
+def get_calendar_flights(flight_number, leg_number, leg_date, limitCount=100):
+    print('[GETTING DATE]', leg_date)
+    with sqlite3.connect('database.db') as con:
+        c = con.cursor()
+        c.execute("""SELECT * 
+            FROM get_available_flights  WHERE
+            CASE WHEN (:fn  <> '') 
+                THEN flight_number = :fn
+                ELSE flight_number <> :fn 
+            END AND
+            CASE WHEN (:ln  <> '') 
+                THEN leg_number = :ln
+                ELSE leg_number <> :ln 
+            END AND
+            CASE WHEN (:dd  <> '') 
+                THEN departure_date = :dd
+                ELSE departure_date <> :dd 
+            END LIMIT :lc""", 
+        {'fn': flight_number, 'ln': leg_number, 'dd': leg_date, 'lc':limitCount});
+        print('[QUERY]', 'get_available_flights()', "Executed Successfully!");
+        return sql_response_from_cursor(c)
+
+def update_flight_leg_data():
+    if flight_leg_timer_check() is False:
+        return;
+    print('[QUERY]', 'update_flight_leg_data()')
+    with sqlite3.connect('database.db') as con:
+        c = con.cursor()
+        c.execute('PRAGMA foreign_keys = ON')
+        c.execute('BEGIN')
+
+        c.execute('SELECT * FROM get_earliest_leg_instance')
+        response = sql_response_from_cursor(c)
+        flight_number = response.get_column('flight_number')
+        leg_number = response.get_column('leg_number')
+        departure_time = response.get_column('departure_time')
+        arrival_time = response.get_column('arrival_time')
+
+        for i in range(len(flight_number)):
+            c.execute('''UPDATE flight_leg
+            SET scheduled_departure_time = :dt,
+                scheduled_arrival_time = :at
+            WHERE
+                flight_number = :fn AND leg_number = :ln;''', 
+            {'fn': flight_number[i], 'ln': leg_number[i], 'dt': departure_time[i], 'at': arrival_time[i]})
+        
+        c.execute('COMMIT')
+
+
 #END QUERY HELPERS
 
 #START CREATE HERLPERS

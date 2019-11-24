@@ -144,11 +144,9 @@
     .header {
         display: none;
     }
-
     @page 
     {
         size: portrait;
         margin: 0;
     }
-
 }
