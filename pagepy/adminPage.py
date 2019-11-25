@@ -387,7 +387,7 @@ def airplane_update_get():
 
 def seat_reservation_update_get():
     print('[ADMIN UPDATE GET]','seat_reservation');
-    query = db.query('SELECT * from seat_reservation');
+    query = db.query('SELECT * from seat_reservation LIMIT 100');
     return get_html_table('seat_reservation', query.get_table(), query.get_headers(), ['flight_number', 'leg_number','seat_date', 'seat_number'], False);
 
 #END GET QUERIES
