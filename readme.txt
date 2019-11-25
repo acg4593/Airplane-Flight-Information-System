@@ -5,3 +5,4 @@ Install modules by calling:
 "pip intall -r requirements.txt"
 
 Once Modules are successfully installed, Run application.py to startup server!
+Connect to Server through Chrome, or other Browser and goto localhost
